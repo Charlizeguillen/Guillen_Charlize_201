@@ -1,0 +1,389 @@
+---
+title: "Assignment 6"
+subtitle: "STAT 201"
+author: "Charlize Guillen"
+
+format:
+  html:
+    toc: true
+    embed-resources: true
+
+execute:
+  message: false
+  warning: false
+---
+
+## Instructions {-}
+
+1. **Write your name** on the assignment
+
+2. Write your code in the *Code* cells of the **template provided** to write solutions for the assignment. **Do not open a new qmd**, and work from scratch. Ensure that the solution is written neatly enough to understand and grade.
+
+3. You may talk to a friend, discuss the questions and potential directions for solving them. However, you need to write your own solutions and code separately, and not as a group activity. Do not use AI to solve the problems.
+
+4. There are point deductions if your code is not clean and organized.
+
+5. Only print what is asked for. Highly inefficient code will be deducted for because it demonstrates lack of understanding.
+
+6. Render as an HTML and **submit BOTH the .qmd and HTML file**.
+
+The grader cannot grade what they cannot see! Failure to render your document after completing all questions will lead to deductions.
+
+
+## Question 1 (3 points)
+
+### Part a
+
+Create a vector called `bears` which contains the values `20, 17, 10, 28, 13, 30, 13, 17, 16, 26, 12, 28, 17, 27`.
+
+Create a vector called `opponent` which contains the values `27, 41, 31, 20, 19, 12, 30, 24, 13, 31, 10, 13, 20, 16`.
+
+Note: each element represents the amount of points scored in a particular football game.
+
+No need to print any output here.
+
+```{r}
+bears<- c(20, 17, 10, 28, 13, 30, 13, 17, 16, 26, 12, 28, 17, 27)
+opponent<- c(27, 41, 31, 20, 19, 12, 30, 24, 13, 31, 10, 13, 20, 16)
+```
+
+
+### Part b
+
+Insert the value `40` as the 5th element in `bears`.
+
+Insert the value `38` as the 1st element in `opponent`.
+
+Print both vectors to prove you were successful.
+
+```{r}
+bears <- append(bears, 40, after=4)
+opponent <- append(opponent, 38, after=0)
+
+print(bears)
+print(opponent)
+
+```
+
+
+### Part c
+
+Determine the largest win spread for the Bears (ie: spread is the difference between bear's score and opponent's score) and print the following statement:
+
+"The largest win spread is {}, when the Bears scored {} points and the Opponent scored {} points."
+
+Note: this needs to still run correctly even if the elements changed or were re-ordered.
+
+```{r}
+#getting the difference between scores 
+score_diff<- bears-opponent
+
+#getting the value of max spread 
+largest_spread <- max(score_diff)
+
+#getting the index of where the largest spread is 
+spread_index<- which(score_diff == max(score_diff))
+
+#getting score of the bears from the saved index 
+bears_score <- bears[spread_index]
+
+#getting score of the opponent from the saved index
+opponent_score<- opponent[spread_index]
+  
+print(score_diff)
+sprintf("The largest win spread is %d, when the Bears scored %d and the Opponent scored %d points.", largest_spread, bears_score, opponent_score)
+
+```
+
+
+## Question 2 (7 points)
+
+### Part a
+
+Create a matrix `game_score` by utilizing the vectors `bears` and `opponent` from Question 1 where the first column represents `bears` and the second column represents `opponent`. 
+
+Name the columns `bears` and `opponent` respectively.
+
+Print `game_score` to prove this was successful.
+
+```{r}
+ 
+game_score<- matrix( c(bears, opponent), ncol=2)
+
+print(game_score)
+```
+
+
+### Part b
+
+The `game_score` is missing some games. Add on a matrix that contains bears scores of `37, 9` and opponent scores of `17, 17`, respectively. Print the new `game_score` matrix.
+
+```{r}
+add_matrix<- matrix(c(37, 9, 17, 17), ncol=2)
+
+#making the new matrix 
+game_score<- rbind(game_score, add_matrix)
+
+print(game_score)
+
+```
+
+
+### Part c
+
+Iterate through `game_score` and print "Win" if the bears won and "Loss" if the bears lost.
+
+```{r}
+
+#iterating through rows and comparing colums values 
+for (i in 1:nrow(game_score)){
+  if (game_score[i,1] > game_score[i,2]){
+    print("Win")
+  }else{
+    print("Loss")
+  }
+}
+
+```
+
+
+### Part d
+
+Use `game_score` and an **inequality** to check if the bears won each game. Store this as a vector called `win` and print the vector `win`.
+
+ie: Since 20 is less than 38 the first element of `win` should be FALSE.
+
+```{r}
+#initializing win vector
+win<- c()
+
+
+for (i in 1:nrow(game_score)){
+  if (game_score[i,1] > game_score[i,2]){
+    win<- c(win, TRUE)
+  }else{
+    win<- c(win, FALSE)
+  }
+}
+
+print(win)
+
+```
+
+
+### Part e
+
+Add the vector `win` as a third column to `game_score`. Print `game_score`.
+
+```{r}
+
+game_score<- cbind(game_score, win)
+print(game_score)
+```
+
+
+### Part f
+
+How many games did the Bears lose before their first win (games are in order)? Many ways to accomplish this BUT you must utilize `game_score` to do so. 
+
+Clarification: do not directly reference any of the individual vectors from previous question parts, this must use the matrix `game_score`. 
+
+The code must be capable of running correctly even if the values changed.
+
+```{r}
+#initializing number of lost games before the first win 
+game_loss= 0 
+
+for (i in 1:nrow(game_score)){
+  if (game_score[i,3] == 0){
+    game_loss <- game_loss + 1
+  }else{
+    break
+  }
+}
+
+
+sprintf("The bears lost %d games before their first win.", game_loss)
+
+```
+
+
+## Question 3 (2 points)
+
+Write a function called `number_of_factors` that takes an integer and returns how many factors the number has. Run your function with `8` to check if it works.
+
+```{r}
+
+number_of_factors <- function(integer){
+  fac_list<- c()  #setting empty list of factors 
+  for (i in 1:integer){
+    if (integer %% (i) == 0){    
+      fac_list<- append(fac_list, i)  #appending all factors to the list 
+    }
+  }
+  num_fac<- length(fac_list)  #getting the number of factors 
+  return (num_fac)
+}
+
+number_of_factors(8)
+
+```
+
+
+## Question 4 (3 points)
+
+Write a function that calculates the area of a rectangle. The function should have an input for length (in inches) and width (in inches). Set a default value for both length and width to be 48.
+
+The function should have 2 outputs: the area in terms of square inches and the area in terms of square feet. There are 12 inches in 1 foot.
+
+Run your function with a length of 102 and width of 60 and store the output as a variable. Then print the following:
+
+"The area in square inches is {}."
+
+"The area in square feet is {}."
+
+```{r}
+
+area_calc<- function(len=48, width=48){
+  area_in<- len*width 
+  area_ft<- (len/12) * (width/12)
+  
+  return (c(area_in, area_ft))
+}
+
+outputs<- area_calc(102, 60)
+sprintf("The area in squared inches is %.0f", outputs[1])
+sprintf("The area in squared feet is %.2f", outputs[2])
+```
+
+
+## Question 5 (5 points)
+
+Write a function that takes a single string vector as an input. Have the function return only the word (or words) with the most letters. 
+
+If there are multiple words with the most letters, then return all words with the most letters **as a vector**.
+
+Clarification: This is NOT returning a list that contains each word individually. It is returning a vector containing all words with the most letters.
+
+Test the function using the vector `fruits` created below.
+
+```{r}
+fruits <- c("apple", "orange", "banana", 
+            "pear", "grapes", "kiwi")
+```
+
+
+```{r}
+most_letters<- function(input_words){
+  num_letters <- nchar(input_words)  #getting number of letters 
+  max_len <- max(num_letters)  #getting the maximim number of letters 
+  longest_words <- input_words[num_letters == max_len]   #saving as vetor words with max length 
+  return(longest_words)
+}
+
+test<- most_letters(fruits)
+print(test)
+
+```
+
+
+## Question 6 (4 points)
+
+Write a function that checks if a value is in a vector.
+The function should take both a value and vector as inputs and return either TRUE or FALSE.
+  
+Run your function using the variables `value` and `check` created below.
+  
+```{r}
+value <- 2
+check <- seq(1, 15, 3)
+
+```
+
+After running the function, depending on what the function returns, print either:
+
+  - "{} is in the vector."
+  - "{} is not in the vector.
+  
+```{r}
+value_check<- function(value,check){
+  #running the code for length of vector and checking of value is in it 
+  for (i in 1:length(check)){
+    if (check[i] == value){
+      is_in = TRUE
+    }else{
+      is_in= FALSE
+    }
+  }
+  return (is_in)
+}
+
+#running the function with given value and vector
+run_function<- value_check(value, check)
+
+#outputting if value was in the vector
+if (run_function==TRUE){
+  sprintf("%s is on the vector", value)
+}else{
+  sprintf("%s is not in the vector", value)
+}
+```
+
+
+## Question 7 (6 points)
+
+Below is a matrix of random numbers.
+
+```{r}
+# Don't change this! A seed keeps results consistent.
+set.seed(123)
+x <- matrix(sample(-50:50, 20), nrow = 5)
+
+print(x)
+```
+
+### Part a
+
+Write a function that takes a matrix as an input, converts all negative numbers to NA, and returns the new matrix. Test your function using the matrix `x` that was created for you.
+
+```{r}
+convert_na<- function(mat){
+  for (i in 1:nrow(mat)){
+    for (j in 1:ncol(mat)){
+      if (mat[i,j] < 0 ){
+        mat[i,j]<- NA
+      }
+    }
+  }
+  return (mat)
+  
+}
+
+test_convert<- convert_na(x)
+print(test_convert)
+
+```
+
+### Part b
+
+Write a function that takes a matrix as an input and converts all even numbers to 1 and odd numbers to 0. The function should return the new matrix. Test your function using the matrix `x` that was created for you.
+
+```{r}
+convert_odd_even<- function(mat){
+  for (i in 1:nrow(mat)){
+    for (j in 1:ncol(mat)){
+      if (mat[i,j] %% (2) ==0 ){ #convert to 1 if even  
+        mat[i,j]<- 1
+      }else{                     #convert to 0 if odd 
+        mat[i, j] <- 0 
+      }
+    }
+  }
+  return (mat)
+}
+
+test_even_odd<- convert_odd_even(x)
+print(test_even_odd)
+
+```
+
